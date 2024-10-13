@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import router from '@/router'
 </script>
 
 <template>
@@ -19,7 +20,7 @@ import {
     <div class="container">
       <!-- Header -->
       <div class="flex justify-between items-center py-6">
-        <h3 class="text-[--text-primary] text-lg letter-spacing-[-1%]">Inspirations</h3>
+        <h3 class="text-text text-lg letter-spacing-[-1%]">Inspirations</h3>
         <nav>
           <ul class="flex items-center gap-1">
             <li>
@@ -94,7 +95,7 @@ import {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent :align="'end'"
-            class="w-[180px] shadow-xs py-1.5">
+            class="w-[180px] shadow-xs py-1.5 px-0">
             <DropdownMenuCheckboxItem>
               Edit
             </DropdownMenuCheckboxItem>
@@ -113,9 +114,10 @@ import {
 
       <!-- Products -->
       <ul class="grid grid-cols-4 gap-6 py-8">
-        <li v-for="item in 12"
+        <li @click="router.push(`inspirations/${item}`)"
+          v-for="item in 12"
           :key="item"
-          class="w-full h-[322px] overflow-hidden bg-[#F7F7F7] rounded-2xl border border-border">
+          class="w-full h-[322px] cursor-pointer overflow-hidden bg-[#F7F7F7] rounded-2xl border border-border">
           <img class="w-full h-full object-cover"
             src="@/assets/images/product.jpg"
             alt="product">
@@ -123,7 +125,8 @@ import {
       </ul>
 
       <!-- Sketelon -->
-      <div v-if="false" class="grid grid-cols-4 gap-6 py-8">
+      <div v-if="false"
+        class="grid grid-cols-4 gap-6 py-8">
         <Skeleton v-for="item in 12"
           :key="item"
           class="w-full h-[322px] rounded-2xl" />

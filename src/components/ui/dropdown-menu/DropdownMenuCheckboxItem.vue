@@ -10,7 +10,7 @@ import { Check } from "lucide-vue-next";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center gap-0.5 justify-start cursor-pointer whitespace-nowrap rounded-md text-sm font-medium transition-colors focus:outline-none border-[0.5px] border-transparent ring-[2.5px] ring-transparent disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center gap-0.5 justify-start cursor-pointer whitespace-nowrap text-sm font-medium transition-colors focus:outline-none border-[0.5px] border-transparent ring-[2.5px] ring-transparent disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {

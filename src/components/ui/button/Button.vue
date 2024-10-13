@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 const props = defineProps({
   variant: { type: null, required: false },
   size: { type: null, required: false },
+  side: { type: null, required: false },
   class: { type: null, required: false },
   asChild: { type: Boolean, required: false },
   as: { type: null, required: false, default: "button" },
@@ -15,7 +16,7 @@ const props = defineProps({
 <template>
   <Primitive :as="as"
     :as-child="asChild"
-    :class="cn(buttonVariants({ variant, size }), props.class)">
+    :class="cn(buttonVariants({ variant, size, side }), props.class)">
     <slot />
   </Primitive>
 </template>

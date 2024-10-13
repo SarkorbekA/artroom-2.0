@@ -1,5 +1,13 @@
 <script setup>
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 </script>
 
 <template>
@@ -14,32 +22,69 @@ import { Button } from '@/components/ui/button'
         <div class="h-8 w-[1px] bg-[#0A0A0A12]"></div>
         <ul class="flex gap-1">
           <li>
-            <a href="#">
-              <Button variant="ghost"
-                size="sm">
-                <h3 class="px-1">Features</h3>
-              </Button>
-            </a>
+            <Button variant="ghost"
+              size="sm">
+              <h3 class="px-1">Features</h3>
+            </Button>
           </li>
           <li>
-            <a href="#">
-              <Button variant="ghost"
-                size="sm">
-                <h3 class="px-1">How it works?</h3>
-              </Button>
-            </a>
+            <Button variant="ghost"
+              size="sm">
+              <h3 class="px-1">How it works?</h3>
+            </Button>
           </li>
           <li>
-            <a href="#">
-              <Button variant="ghost"
-                size="sm">
-                <h3 class="px-1">Support</h3>
-              </Button>
-            </a>
+            <Button variant="ghost"
+              size="sm">
+              <h3 class="px-1">Support</h3>
+            </Button>
           </li>
         </ul>
       </div>
-      <div class="flex gap-6 items-center">
+      <div class="flex gap-4 items-center">
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button size="sm"
+              variant="ghost">
+              <svg width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 16.5C4.85786 16.5 1.5 13.1421 1.5 9C1.5 4.85786 4.85786 1.5 9 1.5C13.1421 1.5 16.5 4.85786 16.5 9C16.5 13.1421 13.1421 16.5 9 16.5ZM7.28252 14.7506C6.56057 13.2194 6.11799 11.5307 6.02048 9.75H3.04642C3.3435 12.1324 5.03729 14.081 7.28252 14.7506ZM7.52302 9.75C7.63582 11.5791 8.15835 13.2973 9 14.814C9.84165 13.2973 10.3642 11.5791 10.477 9.75H7.52302ZM14.9536 9.75H11.9795C11.882 11.5307 11.4395 13.2194 10.7175 14.7506C12.9627 14.081 14.6565 12.1324 14.9536 9.75ZM3.04642 8.25H6.02048C6.11799 6.46933 6.56057 4.78055 7.28252 3.24942C5.03729 3.919 3.3435 5.86762 3.04642 8.25ZM7.52302 8.25H10.477C10.3642 6.42092 9.84165 4.70269 9 3.18599C8.15835 4.70269 7.63582 6.42092 7.52302 8.25ZM10.7175 3.24942C11.4395 4.78055 11.882 6.46933 11.9795 8.25H14.9536C14.6565 5.86762 12.9627 3.919 10.7175 3.24942Z"
+                  fill="#0A0A0A"
+                  fill-opacity="0.45" />
+              </svg>
+              <h3 class="px-1">Uzbekistan (EN)</h3>
+              <svg width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M8.99998 10.4623L13.4623 6L14.523 7.06066L8.99998 12.5837L3.47705 7.06066L4.53771 6L8.99998 10.4623Z"
+                  fill="#0A0A0A"
+                  fill-opacity="0.45" />
+              </svg>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent :align="'end'"
+            class="w-[180px] shadow-xs py-1.5 px-0">
+            <DropdownMenuCheckboxItem>
+              Edit
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem>
+              Unpublish
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem>
+              Duplicate
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem variant="destructive">
+              Delete
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button size="sm">
           <svg width="20"
             height="20"
@@ -63,10 +108,34 @@ import { Button } from '@/components/ui/button'
           </svg>
           <h3 class="px-1 rainbow">Generate your idea</h3>
         </Button>
-        <Button variant="ghost"
+        <!-- <Button class="ml-6"
+          variant="ghost"
           size="sm">
           <h3 class="px-1">Login</h3>
-        </Button>
+        </Button> -->
+        <div class="flex gap-6 items-center">
+          <Button variant="outline"
+            size="sm">
+            <svg width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M13.375 3.25C15.6532 3.25 17.5 5.125 17.5 7.75C17.5 13 11.875 16 10 17.125C8.125 16 2.5 13 2.5 7.75C2.5 5.125 4.375 3.25 6.625 3.25C8.01998 3.25 9.25 4 10 4.75C10.75 4 11.98 3.25 13.375 3.25ZM10.7004 14.9529C11.3616 14.5364 11.9575 14.1216 12.5162 13.6772C14.7503 11.8998 16 9.95762 16 7.75C16 5.98057 14.8472 4.75 13.375 4.75C12.5681 4.75 11.6945 5.17683 11.0606 5.81066L10 6.87132L8.93935 5.81066C8.30551 5.17683 7.43192 4.75 6.625 4.75C5.1693 4.75 4 5.99238 4 7.75C4 9.95762 5.2497 11.8998 7.48385 13.6772C8.0425 14.1216 8.63838 14.5364 9.29957 14.9529C9.52345 15.0939 9.74582 15.2297 10 15.3814C10.2542 15.2297 10.4766 15.0939 10.7004 14.9529Z"
+                fill="#0A0A0A"
+                fill-opacity="0.45" />
+            </svg>
+            <h3 class="px-1">Favourities</h3>
+            <span class="px-1 py-[1px] mr-1 rounded bg-primary/[0.07] text-xs leading-[18px]">16</span>
+          </Button>
+          <Button variant="outline"
+            size="icon">
+            <img src="@/assets/images/user.jfif"
+              class="w-full h-full object-cover"
+              alt="">
+          </Button>
+        </div>
       </div>
     </div>
 
@@ -74,6 +143,4 @@ import { Button } from '@/components/ui/button'
 </template>
 
 <style lang="scss"
-  scoped>
-
-</style>
+  scoped></style>
