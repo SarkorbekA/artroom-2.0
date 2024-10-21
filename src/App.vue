@@ -8,4 +8,11 @@ import { Button } from '@/components/ui/button'
   <RouterView />
 </template>
 
-<style scoped></style>
+
+<style lang="scss">
+.dialog {
+  &>button:not(.dialog-close) {
+    display: none;
+  }
+}
+</style>

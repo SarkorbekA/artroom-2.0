@@ -28,6 +28,7 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         light: "hsl(var(--light))",
+        dark: "hsl(var(--dark))",
         blue: "hsl(var(--blue))",
         text: {
           DEFAULT: "hsl(var(--text-primary))",
@@ -95,6 +96,7 @@ module.exports = {
       },
       boxShadow: {
         'xs': '0px 1px 2px -0.5px #00000014, 0px -0.5px 0px 0px #0000001F inset',
+        'extra': '0px 0px 0px 2.5px #ddd6fe',
       },
     },
   },

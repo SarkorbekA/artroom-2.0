@@ -1,4 +1,10 @@
 <script setup>
+import { useAPI } from "../../axios.js";
+import axios from "axios";
+
+const { post, get, remove, put } = useAPI();
+const baseUrl = import.meta.env.VITE_APP_BASE_URL
+
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,6 +14,100 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { ref, reactive, onMounted, computed } from 'vue'
+
+const phone = ref('');
+const form = reactive({
+  email: "",
+  password: "",
+});
+const isLoginOpen = ref(false)
+
+const formatPhoneInput = (event) => {
+  let cleaned = event.target.value.replace(/\D/g, '');
+
+  if (cleaned.length > 9) {
+    cleaned = cleaned.slice(0, 9);
+  }
+
+  const match = cleaned.match(/^(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})$/);
+
+  if (match) {
+    phone.value = [match[1], match[2], match[3], match[4]]
+      .filter(Boolean)
+      .join(' ');
+  } else {
+    phone.value = cleaned;
+  }
+};
+
+const login = async () => {
+  try {
+    if (form.email && form.password) {
+      const response = await axios.post(baseUrl + "/users-permissions/login", {
+        username: form.email,
+        password: form.password,
+      })
+      // const response = await post("/users-permissions/login", {
+      //   username: form.email,
+      //   password: form.password,
+      // });
+
+      localStorage.setItem("access_token", response?.data?.data?.token)
+
+      isLoginOpen.value = false;
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    auth()
+  }
+};
+
+const isAuthorised = ref(false)
+
+
+const auth = async () => {
+  let token = localStorage.getItem("access_token")
+
+  if (token) {
+    try {
+      const response = await get("/users/me");
+
+      console.log(response);
+
+      isAuthorised.value = true;
+    } catch (error) {
+      console.log(error);
+
+      if (error.status == 401 && error.status == 403) {
+        isAuthorised.value = false;
+      }
+    }
+  }
+}
+
+
+
+
+
+onMounted(async () => {
+  auth()
+})
+
+
 </script>
 
 <template>
@@ -85,7 +185,8 @@ import {
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button size="sm">
+        <Button v-if="!isAuthorised"
+          size="sm">
           <svg width="20"
             height="20"
             viewBox="0 0 20 20"
@@ -108,12 +209,96 @@ import {
           </svg>
           <h3 class="px-1 rainbow">Generate your idea</h3>
         </Button>
-        <!-- <Button class="ml-6"
-          variant="ghost"
-          size="sm">
-          <h3 class="px-1">Login</h3>
-        </Button> -->
-        <div class="flex gap-6 items-center">
+        <Dialog v-if="!isAuthorised"
+          :open="isLoginOpen">
+          <DialogTrigger as-child>
+            <Button @click="isLoginOpen = !isLoginOpen"
+              class="ml-2"
+              variant="ghost"
+              size="sm">
+              <h3 class="px-1">Login</h3>
+            </Button>
+          </DialogTrigger>
+          <DialogContent class="dialog max-w-[633px] py-8 flex flex-col items-center gap-0 shadow-md">
+            <DialogHeader class="gap-0">
+              <DialogTitle class="text-text text-2xl -tracking-[0.18px] font-medium text-center">Sign in to Artoom
+              </DialogTitle>
+              <DialogDescription class="mt-2 text-primary/[70%] text-sm text-center">
+                Fill out the form below to access your account.
+              </DialogDescription>
+            </DialogHeader>
+            <form @submit.prevent="login"
+              class="mt-16 max-w-[370px] w-full flex flex-col gap-6">
+              <!-- <div class="flex flex-col gap-2">
+                <Label for="phone"
+                  class="text-left">
+                  Phone
+                </Label>
+                <div class="relative w-full max-w-sm items-center">
+                  <Input required
+                    id="phone"
+                    type="text"
+                    v-model="phone"
+                    @input="formatPhoneInput"
+                    class="pl-[78px]"
+                    inputmode="numeric" />
+                  <span
+                    class="absolute border-r border-border start-0 inset-y-0 flex items-center justify-center px-4 py-2.5 text-sm">
+                    +998
+                  </span>
+                </div>
+              </div> -->
+              <div class="flex flex-col gap-2">
+                <Label for="email"
+                  class="text-left">
+                  Email
+                </Label>
+                <Input v-model="form.email"
+                  required
+                  placeholder="Email"
+                  type="email"
+                  id="email" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="password"
+                  class="text-left">
+                  Password
+                </Label>
+                <Input v-model="form.password"
+                  placeholder="Password"
+                  required
+                  id="password" />
+              </div>
+              <Button class="w-full">Continue</Button>
+              <div class="flex gap-2 items-center justify-center">
+                <h3 class="text-primary/[0.45] text-xs">Don't have an account?</h3>
+                <button type="submit"
+                  class="text-xs font-medium text-primary/[0.7]">Sign up here</button>
+              </div>
+            </form>
+
+            <DialogClose as-child
+              class="absolute dialog-close top-8 right-8 hover:border-[1px]">
+              <Button @click="isLoginOpen = !isLoginOpen"
+                class="w-8 h-8 p-0"
+                type="button"
+                variant="outline">
+                <svg width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M7.93942 9.00009L2.09473 3.15538L3.15538 2.09473L9.00007 7.93936L14.8447 2.09473L15.9054 3.15538L10.0607 9.00009L15.9054 14.8447L14.8447 15.9054L9.00007 10.0607L3.15538 15.9054L2.09473 14.8447L7.93942 9.00009Z"
+                    fill="#0A0A0A"
+                    fill-opacity="0.45" />
+                </svg>
+              </Button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
+        <div v-if="isAuthorised"
+          class="flex gap-6 items-center">
           <Button variant="outline"
             size="sm">
             <svg width="20"
@@ -142,5 +327,4 @@ import {
   </header>
 </template>
 
-<style lang="scss"
-  scoped></style>
+<style lang="scss"></style>

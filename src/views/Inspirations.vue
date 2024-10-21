@@ -1,7 +1,7 @@
 <script setup>
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from '@/components/ui/dialog'
 import 'swiper/css';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card'
 
 import { Keyboard, Pagination, Navigation } from 'swiper/modules';
 import router from '@/router';
@@ -21,10 +36,45 @@ import router from '@/router';
 
 const route = useRoute();
 
+const isGrid = ref(false)
+
+const activeLocation = ref(0);
+const locations = ref([
+  {
+    title: "Harmon’s store",
+    address: "16A King Adam’s street, Manchester",
+    phone: "+998999999999",
+    chatLink: "@user",
+  },
+  {
+    title: "Harmon’s store",
+    address: "16A King Adam’s street, Manchester",
+    phone: "+998999999999",
+    chatLink: "@user",
+  },
+  {
+    title: "Harmon’s store",
+    address: "16A King Adam’s street, Manchester",
+    phone: "+998999999999",
+    chatLink: "@user",
+  },
+  {
+    title: "Harmon’s store",
+    address: "16A King Adam’s street, Manchester",
+    phone: "+998999999999",
+    chatLink: "@user",
+  }
+])
+
+
+const setLocation = (id) => {
+  activeLocation.value = id
+  // locations.value.map(el => el.isActive = false);
+  // locations.value[id].isActive = true;
+}
+
 onMounted(() => {
-  console.log(
-    route.params.id
-  );
+
 })
 </script>
 
@@ -35,10 +85,81 @@ onMounted(() => {
     <div class="container">
       <div class="grid gap-5 grid-cols-2">
         <div class="flex flex-col row-span-2 row-start-1 row-end-2 gap-6 mr-1 w-full">
-          <div class="rounded-2xl w-full overflow-hidden">
-            <img class="w-full h-full aspect-square"
+          <div class="rounded-2xl w-full overflow-hidden relative">
+            <img loading="lazy"
+              class="w-full h-full aspect-square select-none"
               src="@/assets/images/room.webp"
               alt="room">
+            <div class="absolute w-full h-full top-0 left-0">
+              <div class="top-[100px] left-[100px] absolute">
+                <div class="relative">
+                  <HoverCard>
+                    <HoverCardTrigger class="h-[36px] inline-block">
+                      <Button size="iconR"
+                        variant="transparent"
+                        class="product-btn relative">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                          width="36"
+                          height="36"
+                          viewBox="0 0 36 36"
+                          fill="none">
+                          <g filter="url(#filter0_b_1053_16016)">
+                            <path
+                              d="M0 18C0 8.05888 8.05888 0 18 0C27.9411 0 36 8.05888 36 18C36 27.9411 27.9411 36 18 36C8.05888 36 0 27.9411 0 18Z"
+                              fill="white"
+                              fill-opacity="0.24" />
+                            <circle cx="18"
+                              cy="18"
+                              r="10"
+                              fill="white" />
+                          </g>
+                          <defs>
+                            <filter id="filter0_b_1053_16016"
+                              x="-20"
+                              y="-20"
+                              width="76"
+                              height="76"
+                              filterUnits="userSpaceOnUse"
+                              color-interpolation-filters="sRGB">
+                              <feFlood flood-opacity="0"
+                                result="BackgroundImageFix" />
+                              <feGaussianBlur in="BackgroundImageFix"
+                                stdDeviation="10" />
+                              <feComposite in2="SourceAlpha"
+                                operator="in"
+                                result="effect1_backgroundBlur_1053_16016" />
+                              <feBlend mode="normal"
+                                in="SourceGraphic"
+                                in2="effect1_backgroundBlur_1053_16016"
+                                result="shape" />
+                            </filter>
+                          </defs>
+                        </svg>
+                        <span
+                          class="absolute duration-200 opacity-0 w-2 h-2 bg-primary rounded-full top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"></span>
+                      </Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent :align="'center'"
+                      :side="'right'"
+                      class="w-[176px] p-4 rounded-xl border-none">
+                      <div class="flex gap-3 items-center">
+                        <div class="w-[56px] h-[56px]">
+                          <img loading="lazy"
+                            draggable="false"
+                            class="w-full h-full object-cover"
+                            src="@/assets/images/divan.webp"
+                            alt="product">
+                        </div>
+                        <div>
+                          <h3 class="text-blue font-medium text-xs"># Sofas</h3>
+                          <h3 class="text-text font-medium text-md">UPPLAND</h3>
+                        </div>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+              </div>
+            </div>
           </div>
           <div>
             <swiper :slidesPerView="5"
@@ -46,14 +167,15 @@ onMounted(() => {
               :free-mode="true"
               :modules="[Keyboard]"
               :keyboard="{
-              enabled: true,
-            }"
+                      enabled: true,
+                    }"
               class="mySwiper">
               <swiper-slide class="w-full"
                 v-for="item in 6"
                 :key="item">
                 <div class="w-full aspect-square rounded-2xl overflow-hidden">
-                  <img class="w-full h-full"
+                  <img loading="lazy"
+                    class="w-full h-full"
                     src="@/assets/images/room.webp"
                     alt="room">
                 </div>
@@ -156,7 +278,8 @@ onMounted(() => {
               </div>
               <div class="flex items-center gap-4">
                 <div class="flex shadow-xs border-[0.5px] border-primary/[16%] rounded-lg">
-                  <Button variant="current"
+                  <Button @click="isGrid = false"
+                    :variant="isGrid ? 'group' : 'current'"
                     side="left"
                     size="smT">
                     <svg width="20"
@@ -170,7 +293,8 @@ onMounted(() => {
                     </svg>
                     <h3 class="px-1">List view</h3>
                   </Button>
-                  <Button variant="group"
+                  <Button @click="isGrid = true"
+                    :variant="isGrid ? 'current' : 'group'"
                     side="right"
                     size="smT">
                     <svg width="20"
@@ -232,9 +356,12 @@ onMounted(() => {
               </div>
             </div>
             <ul class="flex flex-col gap-3 pb-3 overflow-y-auto scrollbar-none">
-              <li class="flex gap-4 shadow-xs bg-background p-4 rounded-[10px] border border-light">
+              <li v-for="item in 4"
+                :key="item"
+                class="flex gap-4 shadow-xs bg-background p-4 rounded-[10px] border border-light">
                 <div class="w-[132px] h-[132px] flex justify-center items-center border border-light rounded-lg">
-                  <img class="w-full h-full object-cover"
+                  <img loading="lazy"
+                    class="w-full h-full object-cover"
                     src="@/assets/images/divan.webp"
                     alt="product">
                 </div>
@@ -262,7 +389,119 @@ onMounted(() => {
                     </li>
                   </ul>
                   <div class="mt-4 flex gap-4 items-center">
-                    <Button size="smT">
+                    <Dialog>
+                      <DialogTrigger as-child>
+                        <Button size="smT">
+                          <h3 class="px-1">Visit product</h3>
+                          <svg width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M12.0029 7.06066L5.54796 13.5156L4.4873 12.455L10.9422 6H5.25292V4.5H13.5029V12.75H12.0029V7.06066Z"
+                              fill="white" />
+                          </svg>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent class="max-w-[926px] dialog shadow-md !rounded-3xl p-0 gap-0">
+                        <DialogHeader class="gap-2 py-6 px-8">
+                          <DialogTitle class="text-2xl text-text -tracking-[0.18px] text-medium">UPPLAND</DialogTitle>
+                          <DialogDescription class="text-primary/[0.7] text-sm">
+                            See product details and available stores
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div class="py-6 px-8 flex gap-6">
+                          <!--  h-[528px] overflow-y-auto scrollbar-none -->
+                          <ul class="flex flex-col gap-4 max-w-[370px] px-1 w-full">
+                            <li v-for="(item, index) in locations"
+                              :key="index"
+                              :class="{
+                      'bg-light border-dark !shadow-extra': activeLocation == index
+                    }"
+                              class="flex flex-col gap-2 shadow-xs border-border border-[1px] relative p-4 rounded-lg">
+                              <div @click="setLocation(index)"
+                                class="absolute top-0 left-0 w-full h-full z-20 cursor-pointer"></div>
+                              <h3 class="font-medium text-md text-text -tracking-[0.18px]">{{ item.title }}</h3>
+                              <h4 class="text-sm text-primary/[0.7]">{{ item.address }}</h4>
+                              <div class="relative z-50 grid grid-cols-2 items-center gap-3">
+                                <Button variant="outline"
+                                  size="xs">
+                                  <svg xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 18 18"
+                                    fill="none">
+                                    <path
+                                      d="M7.02417 8.01158C7.7265 9.2466 8.7534 10.2735 9.98842 10.9758L10.6518 10.0471C10.8724 9.73838 11.2887 9.64297 11.6217 9.82485C12.6768 10.4012 13.8428 10.7515 15.0592 10.8478C15.4492 10.8787 15.75 11.2042 15.75 11.5954V14.9426C15.75 15.3271 15.4591 15.6493 15.0766 15.6886C14.6792 15.7295 14.2783 15.75 13.875 15.75C7.45469 15.75 2.25 10.5453 2.25 4.125C2.25 3.7217 2.27057 3.32078 2.31142 2.92332C2.35073 2.54081 2.67296 2.25 3.05749 2.25H6.40456C6.79583 2.25 7.12135 2.55078 7.15222 2.94082C7.2485 4.15716 7.59877 5.32323 8.17515 6.37833C8.35703 6.7113 8.26162 7.12766 7.95292 7.34818L7.02417 8.01158ZM5.13319 7.5189L6.55815 6.50107C6.1541 5.62885 5.87721 4.70387 5.73545 3.75H3.7568C3.75227 3.87474 3.75 3.99975 3.75 4.125C3.75 9.71685 8.28315 14.25 13.875 14.25C14.0002 14.25 14.1253 14.2478 14.25 14.2432V12.2645C13.2962 12.1228 12.3712 11.8459 11.4989 11.4419L10.4811 12.8668C10.0694 12.7069 9.6717 12.5186 9.29055 12.3046L9.24697 12.2797C7.77728 11.444 6.55601 10.2227 5.72025 8.75303L5.69545 8.70945C5.48137 8.3283 5.29316 7.93065 5.13319 7.5189Z"
+                                      fill="#0A0A0A"
+                                      fill-opacity="0.45" />
+                                  </svg>
+                                  <h3 class="px-1">Show number</h3>
+                                </Button>
+                                <Button variant="outline"
+                                  size="xs">
+                                  <svg width="19"
+                                    height="18"
+                                    viewBox="0 0 19 18"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                      d="M8 2.25H11C14.3137 2.25 17 4.93629 17 8.25C17 11.5637 14.3137 14.25 11 14.25V16.875C7.25 15.375 2 13.125 2 8.25C2 4.93629 4.68629 2.25 8 2.25ZM9.5 12.75H11C13.4853 12.75 15.5 10.7353 15.5 8.25C15.5 5.76472 13.4853 3.75 11 3.75H8C5.51472 3.75 3.5 5.76472 3.5 8.25C3.5 10.9575 5.34656 12.7242 9.5 14.6098V12.75Z"
+                                      fill="#0A0A0A"
+                                      fill-opacity="0.45" />
+                                  </svg>
+                                  <h3 class="px-1">Chat</h3>
+                                </Button>
+                              </div>
+                            </li>
+                          </ul>
+                          <div class="h-full rounded-lg overflow-hidden relative">
+                            <img class="w-full h-full object-cover"
+                              src="@/assets/images/map.jpg"
+                              alt="map">
+                            <Button class="absolute top-[14px] right-[14.5px]" variant="outline"
+                              size="xs">
+                              <svg width="21"
+                                height="20"
+                                viewBox="0 0 21 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M11.3401 13.7671L8.19097 12.0493C7.64351 12.6344 6.86446 13 6 13C4.34314 13 3 11.6568 3 10C3 8.34314 4.34314 7 6 7C6.86441 7 7.64344 7.36559 8.19088 7.95059L11.3401 6.23285C11.2813 5.99831 11.25 5.7528 11.25 5.5C11.25 3.84314 12.5932 2.5 14.25 2.5C15.9068 2.5 17.25 3.84314 17.25 5.5C17.25 7.15686 15.9068 8.5 14.25 8.5C13.3855 8.5 12.6065 8.13438 12.059 7.54935L8.90983 9.2671C8.96873 9.50163 9 9.74718 9 10C9 10.2528 8.96873 10.4983 8.90986 10.7328L12.0591 12.4506C12.6065 11.8656 13.3855 11.5 14.25 11.5C15.9068 11.5 17.25 12.8432 17.25 14.5C17.25 16.1568 15.9068 17.5 14.25 17.5C12.5932 17.5 11.25 16.1568 11.25 14.5C11.25 14.2472 11.2813 14.0016 11.3401 13.7671ZM6 11.5C6.82843 11.5 7.5 10.8285 7.5 10C7.5 9.17155 6.82843 8.5 6 8.5C5.17157 8.5 4.5 9.17155 4.5 10C4.5 10.8285 5.17157 11.5 6 11.5ZM14.25 7C15.0785 7 15.75 6.32843 15.75 5.5C15.75 4.67157 15.0785 4 14.25 4C13.4215 4 12.75 4.67157 12.75 5.5C12.75 6.32843 13.4215 7 14.25 7ZM14.25 16C15.0785 16 15.75 15.3285 15.75 14.5C15.75 13.6715 15.0785 13 14.25 13C13.4215 13 12.75 13.6715 12.75 14.5C12.75 15.3285 13.4215 16 14.25 16Z"
+                                  fill="#0A0A0A"
+                                  fill-opacity="0.45" />
+                              </svg>
+                              <h3 class="px-1">Share location</h3>
+                            </Button>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="submit">
+                            Save changes
+                          </Button>
+                        </DialogFooter>
+
+                        <DialogClose as-child
+                          class="absolute dialog-close top-6 right-8 hover:border-[1px]">
+                          <Button class="w-8 h-8 p-0"
+                            type="button"
+                            variant="outline">
+                            <svg width="18"
+                              height="18"
+                              viewBox="0 0 18 18"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg">
+                              <path
+                                d="M7.93942 9.00009L2.09473 3.15538L3.15538 2.09473L9.00007 7.93936L14.8447 2.09473L15.9054 3.15538L10.0607 9.00009L15.9054 14.8447L14.8447 15.9054L9.00007 10.0607L3.15538 15.9054L2.09473 14.8447L7.93942 9.00009Z"
+                                fill="#0A0A0A"
+                                fill-opacity="0.45" />
+                            </svg>
+                          </Button>
+                        </DialogClose>
+                      </DialogContent>
+                    </Dialog>
+                    <!-- <Button size="smT">
                       <h3 class="px-1">Visit product</h3>
                       <svg width="18"
                         height="18"
@@ -273,184 +512,7 @@ onMounted(() => {
                           d="M12.0029 7.06066L5.54796 13.5156L4.4873 12.455L10.9422 6H5.25292V4.5H13.5029V12.75H12.0029V7.06066Z"
                           fill="white" />
                       </svg>
-                    </Button>
-                    <Button variant="outline"
-                      size="smT">
-                      <svg width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M12.375 2.25C14.6532 2.25 16.5 4.125 16.5 6.75C16.5 12 10.875 15 9 16.125C7.125 15 1.5 12 1.5 6.75C1.5 4.125 3.375 2.25 5.625 2.25C7.01998 2.25 8.25 3 9 3.75C9.75 3 10.98 2.25 12.375 2.25ZM9.70043 13.9529C10.3616 13.5364 10.9575 13.1216 11.5162 12.6772C13.7503 10.8998 15 8.95762 15 6.75C15 4.98057 13.8472 3.75 12.375 3.75C11.5681 3.75 10.6945 4.17683 10.0606 4.81066L9 5.87132L7.93935 4.81066C7.30551 4.17683 6.43192 3.75 5.625 3.75C4.1693 3.75 3 4.99238 3 6.75C3 8.95762 4.2497 10.8998 6.48385 12.6772C7.0425 13.1216 7.63838 13.5364 8.29957 13.9529C8.52345 14.0939 8.74582 14.2297 9 14.3814C9.25418 14.2297 9.47655 14.0939 9.70043 13.9529Z"
-                          fill="#0A0A0A"
-                          fill-opacity="0.45" />
-                      </svg>
-                      <h3 class="px-1">Save to wishlist</h3>
-                    </Button>
-                  </div>
-                </div>
-              </li>
-              <li class="flex gap-4 shadow-xs bg-background p-4 rounded-[10px] border border-light">
-                <div class="w-[132px] h-[132px] flex justify-center items-center border border-light rounded-lg">
-                  <img class="w-full h-full object-cover"
-                    src="@/assets/images/divan.webp"
-                    alt="product">
-                </div>
-                <div>
-                  <h3 class="text-blue font-medium text-sm"># Sofas</h3>
-                  <h3 class="text-text font-medium text-lg -tracking-[0.18px] mt-2">UPPLAND</h3>
-                  <ul class="mt-4 flex flex-col gap-2 w-full">
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Price:</span> ~ $1 540</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Size:</span> 124inch <span
-                          class="w-5 inline-block text-center">/</span>
-                        84inch</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Color:</span> Hakebo / Gray</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Material:</span> Fabric</h3>
-                    </li>
-                  </ul>
-                  <div class="mt-4 flex gap-4 items-center">
-                    <Button size="smT">
-                      <h3 class="px-1">Visit product</h3>
-                      <svg width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M12.0029 7.06066L5.54796 13.5156L4.4873 12.455L10.9422 6H5.25292V4.5H13.5029V12.75H12.0029V7.06066Z"
-                          fill="white" />
-                      </svg>
-                    </Button>
-                    <Button variant="outline"
-                      size="smT">
-                      <svg width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M12.375 2.25C14.6532 2.25 16.5 4.125 16.5 6.75C16.5 12 10.875 15 9 16.125C7.125 15 1.5 12 1.5 6.75C1.5 4.125 3.375 2.25 5.625 2.25C7.01998 2.25 8.25 3 9 3.75C9.75 3 10.98 2.25 12.375 2.25ZM9.70043 13.9529C10.3616 13.5364 10.9575 13.1216 11.5162 12.6772C13.7503 10.8998 15 8.95762 15 6.75C15 4.98057 13.8472 3.75 12.375 3.75C11.5681 3.75 10.6945 4.17683 10.0606 4.81066L9 5.87132L7.93935 4.81066C7.30551 4.17683 6.43192 3.75 5.625 3.75C4.1693 3.75 3 4.99238 3 6.75C3 8.95762 4.2497 10.8998 6.48385 12.6772C7.0425 13.1216 7.63838 13.5364 8.29957 13.9529C8.52345 14.0939 8.74582 14.2297 9 14.3814C9.25418 14.2297 9.47655 14.0939 9.70043 13.9529Z"
-                          fill="#0A0A0A"
-                          fill-opacity="0.45" />
-                      </svg>
-                      <h3 class="px-1">Save to wishlist</h3>
-                    </Button>
-                  </div>
-                </div>
-              </li>
-              <li class="flex gap-4 shadow-xs bg-background p-4 rounded-[10px] border border-light">
-                <div class="w-[132px] h-[132px] flex justify-center items-center border border-light rounded-lg">
-                  <img class="w-full h-full object-cover"
-                    src="@/assets/images/divan.webp"
-                    alt="product">
-                </div>
-                <div>
-                  <h3 class="text-blue font-medium text-sm"># Sofas</h3>
-                  <h3 class="text-text font-medium text-lg -tracking-[0.18px] mt-2">UPPLAND</h3>
-                  <ul class="mt-4 flex flex-col gap-2 w-full">
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Price:</span> ~ $1 540</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Size:</span> 124inch <span
-                          class="w-5 inline-block text-center">/</span>
-                        84inch</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Color:</span> Hakebo / Gray</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Material:</span> Fabric</h3>
-                    </li>
-                  </ul>
-                  <div class="mt-4 flex gap-4 items-center">
-                    <Button size="smT">
-                      <h3 class="px-1">Visit product</h3>
-                      <svg width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M12.0029 7.06066L5.54796 13.5156L4.4873 12.455L10.9422 6H5.25292V4.5H13.5029V12.75H12.0029V7.06066Z"
-                          fill="white" />
-                      </svg>
-                    </Button>
-                    <Button variant="outline"
-                      size="smT">
-                      <svg width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M12.375 2.25C14.6532 2.25 16.5 4.125 16.5 6.75C16.5 12 10.875 15 9 16.125C7.125 15 1.5 12 1.5 6.75C1.5 4.125 3.375 2.25 5.625 2.25C7.01998 2.25 8.25 3 9 3.75C9.75 3 10.98 2.25 12.375 2.25ZM9.70043 13.9529C10.3616 13.5364 10.9575 13.1216 11.5162 12.6772C13.7503 10.8998 15 8.95762 15 6.75C15 4.98057 13.8472 3.75 12.375 3.75C11.5681 3.75 10.6945 4.17683 10.0606 4.81066L9 5.87132L7.93935 4.81066C7.30551 4.17683 6.43192 3.75 5.625 3.75C4.1693 3.75 3 4.99238 3 6.75C3 8.95762 4.2497 10.8998 6.48385 12.6772C7.0425 13.1216 7.63838 13.5364 8.29957 13.9529C8.52345 14.0939 8.74582 14.2297 9 14.3814C9.25418 14.2297 9.47655 14.0939 9.70043 13.9529Z"
-                          fill="#0A0A0A"
-                          fill-opacity="0.45" />
-                      </svg>
-                      <h3 class="px-1">Save to wishlist</h3>
-                    </Button>
-                  </div>
-                </div>
-              </li>
-              <li class="flex gap-4 shadow-xs bg-background p-4 rounded-[10px] border border-light">
-                <div class="w-[132px] h-[132px] flex justify-center items-center border border-light rounded-lg">
-                  <img class="w-full h-full object-cover"
-                    src="@/assets/images/divan.webp"
-                    alt="product">
-                </div>
-                <div>
-                  <h3 class="text-blue font-medium text-sm"># Sofas</h3>
-                  <h3 class="text-text font-medium text-lg -tracking-[0.18px] mt-2">UPPLAND</h3>
-                  <ul class="mt-4 flex flex-col gap-2 w-full">
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Price:</span> ~ $1 540</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Size:</span> 124inch <span
-                          class="w-5 inline-block text-center">/</span>
-                        84inch</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Color:</span> Hakebo / Gray</h3>
-                    </li>
-                    <li>
-                      <h3 class="text-sm font-medium text-primary/[0.7]"><span
-                          class="w-[124px] inline-block mr-2">Material:</span> Fabric</h3>
-                    </li>
-                  </ul>
-                  <div class="mt-4 flex gap-4 items-center">
-                    <Button size="smT">
-                      <h3 class="px-1">Visit product</h3>
-                      <svg width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M12.0029 7.06066L5.54796 13.5156L4.4873 12.455L10.9422 6H5.25292V4.5H13.5029V12.75H12.0029V7.06066Z"
-                          fill="white" />
-                      </svg>
-                    </Button>
+                    </Button> -->
                     <Button variant="outline"
                       size="smT">
                       <svg width="18"
@@ -471,7 +533,6 @@ onMounted(() => {
             </ul>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -480,7 +541,15 @@ onMounted(() => {
 </template>
 
 <style lang="scss"
-  scoped></style>
+  scoped>
+  .product {
+    &-btn[data-state="open"] {
+      span {
+        opacity: 1;
+      }
+    }
+  }
+</style>
 
 
 

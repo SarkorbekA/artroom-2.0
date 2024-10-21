@@ -37,7 +37,7 @@ a:focus {
     --foreground: 222.2 84% 4.9%;
 
     --light: 0 0% 97%;
-
+    --dark: 0 0% 9%;
     --border: 0 0% 92%;
     --input: 214.3 31.8% 91.4%;
 
@@ -48,7 +48,6 @@ a:focus {
     --secondary-foreground: #0a0a0a;
 
     --ring: 251 95% 92%;
-
     --radius: 0.5rem;
 
     --text-primary: 0 0% 11%;
