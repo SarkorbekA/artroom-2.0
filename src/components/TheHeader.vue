@@ -170,7 +170,7 @@ onMounted(async () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent :align="'end'"
-            class="w-[180px] shadow-xs py-1.5 px-0">
+            class="w-[316px] shadow-xs py-1.5 px-0">
             <DropdownMenuCheckboxItem>
               Edit
             </DropdownMenuCheckboxItem>

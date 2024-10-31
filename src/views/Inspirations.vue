@@ -22,16 +22,31 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose
-} from '@/components/ui/dialog'
-import 'swiper/css';
+} from '@/components/ui/dialog';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@/components/ui/hover-card'
+} from '@/components/ui/hover-card';
+
+import {
+  createYmaps,
+  YandexMap,
+  YandexMapControls,
+  YandexMapDefaultFeaturesLayer,
+  YandexMapDefaultSchemeLayer,
+  YandexMapZoomControl,
+  YandexMapMarker
+} from "vue-yandex-maps";
 
 import { Keyboard, Pagination, Navigation } from 'swiper/modules';
 import router from '@/router';
+import 'swiper/css';
 
 
 const route = useRoute();
@@ -69,13 +84,20 @@ const locations = ref([
 
 const setLocation = (id) => {
   activeLocation.value = id
-  // locations.value.map(el => el.isActive = false);
-  // locations.value[id].isActive = true;
 }
 
-onMounted(() => {
+const handleClick = () => console.log('as');
 
-})
+const markers = [
+  {
+    coordinates: [69.279737, 41.311158],
+    onClick: handleClick,
+  },
+  // {
+  //   coordinates: [54.76778893634, 57.108481458691],
+  //   onClick: handleClick,
+  // },
+];
 </script>
 
 <template>
@@ -389,6 +411,7 @@ onMounted(() => {
                     </li>
                   </ul>
                   <div class="mt-4 flex gap-4 items-center">
+                    <!-- ====  Dialog  ==== -->
                     <Dialog>
                       <DialogTrigger as-child>
                         <Button size="smT">
@@ -404,7 +427,7 @@ onMounted(() => {
                           </svg>
                         </Button>
                       </DialogTrigger>
-                      <DialogContent class="max-w-[926px] dialog shadow-md !rounded-3xl p-0 gap-0">
+                      <DialogContent class="max-w-[926px] dialog shadow-md !rounded-3xl overflow-hidden p-0 gap-0">
                         <DialogHeader class="gap-2 py-6 px-8">
                           <DialogTitle class="text-2xl text-text -tracking-[0.18px] text-medium">UPPLAND</DialogTitle>
                           <DialogDescription class="text-primary/[0.7] text-sm">
@@ -412,7 +435,6 @@ onMounted(() => {
                           </DialogDescription>
                         </DialogHeader>
                         <div class="py-6 px-8 flex gap-6">
-                          <!--  h-[528px] overflow-y-auto scrollbar-none -->
                           <ul class="flex flex-col gap-4 max-w-[370px] px-1 w-full">
                             <li v-for="(item, index) in locations"
                               :key="index"
@@ -456,11 +478,58 @@ onMounted(() => {
                               </div>
                             </li>
                           </ul>
-                          <div class="h-full rounded-lg overflow-hidden relative">
-                            <img class="w-full h-full object-cover"
-                              src="@/assets/images/map.jpg"
-                              alt="map">
-                            <Button class="absolute top-[14px] right-[14.5px]" variant="outline"
+                          <div class="h-full map rounded-lg overflow-hidden relative">
+                            <yandex-map class="h-full w-full"
+                              :settings="{
+                      location: {
+                        center: [69.279737, 41.711158],
+                        zoom: 9,
+                      },
+                    }"
+                              height="100%"
+                              width="100%">
+                              <yandex-map-default-features-layer />
+                              <yandex-map-default-scheme-layer :settings="{ theme: 'light' }" />
+                              <yandex-map-controls :settings="{ position: 'right' }">
+                                <yandex-map-zoom-control />
+                              </yandex-map-controls>
+
+                              <yandex-map-marker v-for="(marker, index) in markers"
+                                :key="index"
+                                :settings="marker">
+                                <Popover>
+                                  <PopoverTrigger>
+                                    <svg width="21"
+                                      height="33"
+                                      viewBox="0 0 21 33"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg">
+                                      <!-- <path fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M10.5 0C16.0228 0 20.5 4.47715 20.5 10C20.5 15.2016 16.5285 19.4757 11.4524 19.9552V30.4762C11.4524 31.0022 11.026 31.4286 10.5 31.4286C9.97401 31.4286 9.54762 31.0022 9.54762 30.4762V19.9552C4.47149 19.4757 0.5 15.2016 0.5 10C0.5 4.47715 4.97715 0 10.5 0Z"
+                                        fill="black" /> -->
+                                      <path fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M10.5 0C16.0228 0 20.5 4.47715 20.5 10C20.5 15.2016 16.5285 19.4757 11.4524 19.9552V30.4762C11.4524 31.0022 11.026 31.4286 10.5 31.4286C9.97401 31.4286 9.54762 31.0022 9.54762 30.4762V19.9552C4.47149 19.4757 0.5 15.2016 0.5 10C0.5 4.47715 4.97715 0 10.5 0Z"
+                                        fill="#8B5CF6" />
+                                      <path
+                                        d="M13.8327 9.99984C13.8327 8.15889 12.3403 6.6665 10.4993 6.6665C8.6584 6.6665 7.16602 8.15889 7.16602 9.99984C7.16602 11.8408 8.6584 13.3332 10.4993 13.3332C12.3403 13.3332 13.8327 11.8408 13.8327 9.99984Z"
+                                        fill="white" />
+                                      <path opacity="0.3"
+                                        d="M10.5001 32.381C11.8151 32.381 12.881 31.848 12.881 31.1905C12.881 30.533 11.8151 30 10.5001 30C9.18513 30 8.11914 30.533 8.11914 31.1905C8.11914 31.848 9.18513 32.381 10.5001 32.381Z"
+                                        fill="black" />
+                                    </svg>
+                                  </PopoverTrigger>
+                                  <PopoverContent class="text-center">
+                                    location
+                                  </PopoverContent>
+                                </Popover>
+
+                              </yandex-map-marker>
+                            </yandex-map>
+
+                            <Button class="absolute top-[14px] right-[14.5px]"
+                              variant="outline"
                               size="xs">
                               <svg width="21"
                                 height="20"
@@ -477,9 +546,47 @@ onMounted(() => {
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit">
-                            Save changes
-                          </Button>
+                          <div class="w-full bg-light py-6 px-8 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                              <Button variant="outline"
+                                size="xs">
+                                <svg width="20"
+                                  height="20"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M6.46838 16.6181L2.5 17.5L3.38186 13.5316C2.81908 12.4792 2.5 11.2769 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C8.72312 17.5 7.5208 17.181 6.46838 16.6181ZM6.68556 15.0333L7.17571 15.2954C8.03686 15.7559 8.99913 16 10 16C13.3137 16 16 13.3137 16 10C16 6.68629 13.3137 4 10 4C6.68629 4 4 6.68629 4 10C4 11.0009 4.24412 11.9631 4.70462 12.8243L4.96672 13.3144L4.47562 15.5244L6.68556 15.0333Z"
+                                    fill="#0A0A0A"
+                                    fill-opacity="0.45" />
+                                </svg>
+                                <h3 class="px-1">Chat with support</h3>
+                              </Button>
+                              <Button variant="outline"
+                                size="xs">
+                                <svg width="20"
+                                  height="20"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M10.0007 4.3964C11.7625 2.815 14.485 2.8675 16.1819 4.56802C17.879 6.26854 17.9372 8.97775 16.3589 10.7448L9.99992 17.1138L3.64103 10.7448C2.06279 8.97775 2.12178 6.26426 3.81802 4.56802C5.51618 2.86986 8.23389 2.81265 10.0007 4.3964ZM15.1202 5.62758C13.9959 4.50096 12.1807 4.45526 11.0027 5.51265L10.0014 6.41143L8.99957 5.51336C7.81823 4.45448 6.00629 4.50106 4.87868 5.62868C3.76137 6.74598 3.70528 8.53548 4.73495 9.7174L9.99992 14.9907L15.2651 9.7174C16.2951 8.53503 16.2392 6.74894 15.1202 5.62758Z"
+                                    fill="#0A0A0A"
+                                    fill-opacity="0.45" />
+                                </svg>
+                                <h3 class="px-1">Save to wishlist</h3>
+                              </Button>
+                            </div>
+                            <div class="flex items-center gap-2">
+                              <DialogClose as-child
+                                class="">
+                                <Button variant="outline"
+                                  size="xs">
+                                  <h3 class="px-1">Close</h3>
+                                </Button>
+                              </DialogClose>
+                            </div>
+                          </div>
                         </DialogFooter>
 
                         <DialogClose as-child
@@ -501,18 +608,6 @@ onMounted(() => {
                         </DialogClose>
                       </DialogContent>
                     </Dialog>
-                    <!-- <Button size="smT">
-                      <h3 class="px-1">Visit product</h3>
-                      <svg width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M12.0029 7.06066L5.54796 13.5156L4.4873 12.455L10.9422 6H5.25292V4.5H13.5029V12.75H12.0029V7.06066Z"
-                          fill="white" />
-                      </svg>
-                    </Button> -->
                     <Button variant="outline"
                       size="smT">
                       <svg width="18"
@@ -548,6 +643,24 @@ onMounted(() => {
         opacity: 1;
       }
     }
+  }
+
+  .map {
+    width: calc(100% - 370px - 24px);
+  }
+
+  .marker {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background: #ff0000;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    line-height: 20px;
   }
 </style>
 

@@ -1,6 +1,9 @@
 <script setup>
 import { useAPI } from "../../axios.js";
 
+import InfiniteLoading from "v3-infinite-loading";
+import "v3-infinite-loading/lib/style.css";
+
 const { post, get, remove, put } = useAPI();
 const baseUrl = import.meta.env.VITE_APP_FILE_BASE_URL
 
@@ -20,26 +23,81 @@ import router from '@/router'
 import { onMounted, ref } from "vue";
 
 const ideas = ref([]);
+const styles = ref([]);
+const page = ref(2);
+const pageCount = ref(1);
+const isLoading = ref(false);
+const category = ref("")
 
-const getIdeas = async () => {
+const getIdeas = async (pages, style) => {
+  console.log(category.value);
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const response = await get('/image-ideas', {
+      populate: '*',
+      pagination: {
+        pageSize: 12,
+        page: pages
+      },
+      "filters[name][$eq]": category.value ? category.value : null
+    });
+
+    pageCount.value = response?.meta?.pagination.pageCount
+    if (response.data.length < 1) isLoading.value = false;
+
+    response.data.forEach(el => {
+      ideas.value.push(el);
+    });
+
+  } catch (error) {
+    console.log(error);
+  }
+  finally {
+    if (pages == 1) {
+      isLoading.value = true
+    }
+
+    pages >= pageCount.value ? isLoading.value = false : ""
+  }
+};
+
+const getStyles = async () => {
   try {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const response = await get('/style-type/getStyleWithImage')
 
-
-    response.data.forEach(el => {
-      el.images.map(el => ideas.value.push(el))
-    })
-
-    console.log(ideas.value);
+    styles.value.push(...response.data)
   } catch (error) {
     console.log(error);
   }
 }
 
+const filterByCategory = async (el) => {
+  if (category.value == el.styleName) {
+    category.value = ''
+  } else {
+    category.value = el.styleName
+  }
+  ideas.value = []
+  page.value = 2
+  getIdeas(1, el.styleName)
+}
+
+const capitalize = (str) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+const loadData = () => {
+  getIdeas(page.value);
+  page.value++;
+};
+
 onMounted(() => {
-  getIdeas();
+  getIdeas(1);
+  getStyles();
 })
 </script>
 
@@ -52,47 +110,15 @@ onMounted(() => {
         <h3 class="text-text text-lg letter-spacing-[-1%]">Inspirations</h3>
         <nav>
           <ul class="flex items-center gap-1">
-            <li>
-              <Button variant="ghost"
+            <li v-for="(item, index) in styles"
+              :key="index">
+              <Button :class="{
+              'ring-ring border-borderH': item.styleName == category
+            }"
+                @click="filterByCategory(item)"
+                variant="ghost"
                 size="smT">
-                Modern
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost"
-                size="smT">
-                Contemporary
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost"
-                size="smT">
-                Minimalist
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost"
-                size="smT">
-                Scandinavian
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost"
-                size="smT">
-                Bohemian
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost"
-                size="smT">
-                Farmhouse
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost"
-                size="sm">
-                <h3 class="px-1">Furnitures</h3>
-                <span class="px-1 py-[1px] rounded bg-primary/[0.07] text-xs leading-[18px]">New</span>
+                {{ capitalize(item.styleName) }}
               </Button>
             </li>
           </ul>
@@ -175,8 +201,8 @@ onMounted(() => {
           </Button>
           <div
             class="product-inner z-10 absolute w-full opacity-0 duration-300 invisible h-full justify-end p-4 flex flex-col items-end top-0 left-0">
-            <div class="flex flex-col gap-1 w-full justify-start">
-              <h3 class="text-background font-medium -tracking-[0.18px] text-md">UPLAND</h3>
+            <div class="flex flex-col gap-1 w-full justify-start relative product-box">
+              <h3 class="text-background font-medium -tracking-[0.18px] text-md">{{ capitalize(item.name) }}</h3>
               <button @click="router.push(`inspirations/${item}`)"
                 class="cursor-pointer text-background/[0.7] w-fit font-medium text-xs">Click to see
                 details</button>
@@ -184,7 +210,8 @@ onMounted(() => {
           </div>
         </li>
       </ul>
-
+      <InfiniteLoading v-if="isLoading"
+        @infinite="loadData" />
 
     </div>
 
@@ -192,10 +219,30 @@ onMounted(() => {
   </div>
 </template>
 
+<style lang="scss">
+.container[data-v-d3e37633] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
 
 <style lang="scss"
   scoped>
   .product {
+    &-box {
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0px;
+        z-index: -1;
+        box-shadow: 0 0 50px 30px rgba(0, 0, 0, 0.5);
+      }
+    }
+
     &:hover {
       .product {
         &-inner {

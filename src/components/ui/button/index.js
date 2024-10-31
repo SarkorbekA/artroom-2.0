@@ -7,14 +7,14 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-background border-primary hover:bg-primary-foreground focus:border-[--border-hover] focus:ring-ring",
+        default: "bg-primary text-background border-primary hover:bg-primary-foreground focus:border-borderH focus:ring-ring",
         destructive:
           "bg-destructive text-background hover:bg-destructive/90",
         outline:
-          "border-[0.5px] border-primary/[0.16] shadow-xs bg-background focus:border-[--border-hover] focus:ring-ring",
+          "border-[0.5px] border-primary/[0.16] shadow-xs bg-background focus:border-borderH focus:ring-ring",
         secondary:
-          "bg-primary/[0.04] text-text hover:bg-primary/[0.07] focus:border-[--border-hover] focus:ring-ring",
-        ghost: "text-primary/[0.7] hover:bg-primary/[0.04] focus:bg-primary/[0.01] focus:border-[--border-hover] focus:ring-ring",
+          "bg-primary/[0.04] text-text hover:bg-primary/[0.07] focus:border-borderH focus:ring-ring",
+        ghost: "text-primary/[0.7] hover:bg-primary/[0.04] focus:bg-primary/[0.01] focus:border-borderH focus:ring-ring",
         link: "text-primary underline-offset-4 hover:underline",
         base: "gap-1 text-text border-none !p-0",
         group: "bg-background hover:bg-primary/[0.04]",
