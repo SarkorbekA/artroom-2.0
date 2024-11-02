@@ -35,15 +35,16 @@ a:focus {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
-
+    --brand: 243 75% 59%;
     --light: 0 0% 97%;
+    --light-blue: 212 100% 97%;
     --dark: 0 0% 9%;
     --border: 0 0% 92%;
     --input: 214.3 31.8% 91.4%;
 
     --primary: 0 0% 4%;
     --primary-foreground: 0, 0%, 15%;
+
 
     --secondary: hsl(0, 0%, 15%);
     --secondary-foreground: #0a0a0a;
@@ -161,11 +162,16 @@ html::-webkit-scrollbar-thumb {
   width: 6px;
 }
 
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
+.scrollbarX::-webkit-scrollbar {
+  height: 6px;
 }
 
-.scrollbarY::-webkit-scrollbar-thumb {
+.scrollbarY::-webkit-scrollbar-thumb,
+.scrollbarX::-webkit-scrollbar-thumb {
   border-radius: 16px;
   background: hsl(var(--primary) / 0.4);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

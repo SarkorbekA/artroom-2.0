@@ -15,9 +15,19 @@ const router = createRouter({
       component: () => import('../views/Inspirations.vue')
     },
     {
+      path: '/product/:id',
+      name: 'product',
+      component: () => import('../views/Product.vue')
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import('../views/AboutView.vue')
+    },
+    {
+      path: '/search-by-images',
+      name: 'search-by-images',
+      component: () => import('../views/SearchByImages.vue')
     }
   ]
 })

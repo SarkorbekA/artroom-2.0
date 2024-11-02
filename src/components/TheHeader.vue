@@ -1,10 +1,9 @@
 <script setup>
 import { useAPI } from "../../axios.js";
 import axios from "axios";
-
-const { post, get, remove, put } = useAPI();
 const baseUrl = import.meta.env.VITE_APP_BASE_URL
-
+import useFileList from "@/compositions/file-list";
+import DropZone from "@/components/DropZone.vue";
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -28,12 +27,21 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ref, reactive, onMounted, computed } from 'vue'
 
+const { post, get, remove, put } = useAPI();
+const { files, removeFile, addFiles } = useFileList();
+
 const phone = ref('');
 const form = reactive({
   email: "",
   password: "",
 });
-const isLoginOpen = ref(false)
+const isLoginOpen = ref(false);
+const isGenerateOpen = ref(false);
+const isSearchOpen = ref(false);
+
+const onInputChange = (e) => {
+  addFiles(e.target.files);
+};
 
 const formatPhoneInput = (event) => {
   let cleaned = event.target.value.replace(/\D/g, '');
@@ -60,10 +68,6 @@ const login = async () => {
         username: form.email,
         password: form.password,
       })
-      // const response = await post("/users-permissions/login", {
-      //   username: form.email,
-      //   password: form.password,
-      // });
 
       localStorage.setItem("access_token", response?.data?.data?.token)
 
@@ -76,6 +80,11 @@ const login = async () => {
   }
 };
 
+const logOut = () => {
+  localStorage.removeItem("access_token")
+  isAuthorised.value = false;
+}
+
 const isAuthorised = ref(false)
 
 
@@ -85,8 +94,6 @@ const auth = async () => {
   if (token) {
     try {
       const response = await get("/users/me");
-
-      console.log(response);
 
       isAuthorised.value = true;
     } catch (error) {
@@ -99,9 +106,18 @@ const auth = async () => {
   }
 }
 
+const openSearch = () => {
+  isGenerateOpen.value = false;
+  isSearchOpen.value = true;
+}
 
 
+// const locale = localStorage.getItem('locale');
 
+// const changeLocale = (locale) => {
+//   localStorage.setItem('locale', locale);
+//   window.location.reload();
+// }
 
 onMounted(async () => {
   auth()
@@ -185,30 +201,91 @@ onMounted(async () => {
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button v-if="!isAuthorised"
-          size="sm">
-          <svg width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_1163_37388)">
-              <path
-                d="M13.7505 1.90625L14.7396 3.76087L16.5942 4.75L14.7396 5.73913L13.7505 7.59376L12.7613 5.73913L10.9067 4.75L12.7613 3.76087L13.7505 1.90625ZM7.00049 4.25L9.00047 8L12.7505 9.99999L9.00047 12L7.00049 15.75L5.00049 12L1.25049 9.99999L5.00049 8L7.00049 4.25ZM15.7505 13.25L14.5005 10.9063L13.2505 13.25L10.9067 14.5L13.2505 15.75L14.5005 18.0938L15.7505 15.75L18.0942 14.5L15.7505 13.25Z"
-                fill="white"
-                fill-opacity="0.7" />
-            </g>
-            <defs>
-              <clipPath id="clip0_1163_37388">
-                <rect width="18"
+
+        <Dialog :open="isGenerateOpen">
+          <DialogTrigger as-child>
+            <Button @click="isGenerateOpen = !isGenerateOpen"
+              size="sm"
+              :variant="isAuthorised ? 'outline' : 'default'">
+              <svg width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_1163_37388)">
+                  <path
+                    d="M13.7505 1.90625L14.7396 3.76087L16.5942 4.75L14.7396 5.73913L13.7505 7.59376L12.7613 5.73913L10.9067 4.75L12.7613 3.76087L13.7505 1.90625ZM7.00049 4.25L9.00047 8L12.7505 9.99999L9.00047 12L7.00049 15.75L5.00049 12L1.25049 9.99999L5.00049 8L7.00049 4.25ZM15.7505 13.25L14.5005 10.9063L13.2505 13.25L10.9067 14.5L13.2505 15.75L14.5005 18.0938L15.7505 15.75L18.0942 14.5L15.7505 13.25Z"
+                    :fill="!isAuthorised ? 'white' : 'black'"
+                    fill-opacity="0.7" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_1163_37388">
+                    <rect width="18"
+                      height="18"
+                      fill="white"
+                      transform="translate(1 1)" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <h3 :class="{
+            rainbow: !isAuthorised,
+            'primary': isAuthorised
+          }"
+                class="px-1">Generate your idea</h3>
+            </Button>
+          </DialogTrigger>
+          <DialogContent class="dialog max-w-[633px] py-8 flex flex-col items-center gap-0 shadow-md">
+            <DialogHeader class="gap-0">
+              <DialogTitle class="text-text text-2xl -tracking-[0.18px] font-medium text-center">
+                Generate your next idea
+              </DialogTitle>
+              <DialogDescription class="mt-2 text-primary/[70%] text-sm text-center">
+                With AI, you can easily and endlessly design your home interior.
+              </DialogDescription>
+            </DialogHeader>
+            <div class="mt-[64px] w-full justify-center flex gap-6">
+              <button @click="openSearch"
+                class="border text-left border-border p-4 h-[220px] rounded-2xl">
+                <div class="aspect-[195/124] w-[195px]">
+                  <img loading="lazy"
+                    class="w-full object-contain"
+                    src="@/assets/images/search.png"
+                    alt="search">
+                </div>
+                <h3 class="mt-3 text-medium -tracking-[0.18px] text-md text-primary">Search products</h3>
+                <h4 class="mt-2 text-primary/[0.7] text-sm">Find products within seconds</h4>
+              </button>
+              <button class="border text-left border-border p-4 h-[220px] rounded-2xl">
+                <div class="aspect-[195/124] w-[195px]">
+                  <img loading="lazy"
+                    class="w-full object-contain"
+                    src="@/assets/images/interior.png"
+                    alt="search">
+                </div>
+                <h3 class="mt-3 text-medium -tracking-[0.18px] text-md text-primary">Interior assistant</h3>
+                <h4 class="mt-2 text-primary/[0.7] text-sm">Design your home easily</h4>
+              </button>
+            </div>
+            <DialogClose as-child
+              class="absolute dialog-close top-8 right-8 hover:border-[1px]">
+              <Button @click="isGenerateOpen = !isGenerateOpen"
+                class="w-8 h-8 p-0"
+                type="button"
+                variant="outline">
+                <svg width="18"
                   height="18"
-                  fill="white"
-                  transform="translate(1 1)" />
-              </clipPath>
-            </defs>
-          </svg>
-          <h3 class="px-1 rainbow">Generate your idea</h3>
-        </Button>
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M7.93942 9.00009L2.09473 3.15538L3.15538 2.09473L9.00007 7.93936L14.8447 2.09473L15.9054 3.15538L10.0607 9.00009L15.9054 14.8447L14.8447 15.9054L9.00007 10.0607L3.15538 15.9054L2.09473 14.8447L7.93942 9.00009Z"
+                    fill="#0A0A0A"
+                    fill-opacity="0.45" />
+                </svg>
+              </Button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
         <Dialog v-if="!isAuthorised"
           :open="isLoginOpen">
           <DialogTrigger as-child>
@@ -314,17 +391,156 @@ onMounted(async () => {
             <h3 class="px-1">Favourities</h3>
             <span class="px-1 py-[1px] mr-1 rounded bg-primary/[0.07] text-xs leading-[18px]">16</span>
           </Button>
-          <Button variant="outline"
-            size="icon">
-            <img src="@/assets/images/user.jfif"
-              class="w-full h-full object-cover"
-              alt="">
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline"
+                size="icon">
+                <img src="@/assets/images/user.jfif"
+                  class="w-full h-full object-cover"
+                  alt="">
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent :align="'end'"
+              class="w-[150px] shadow-xs py-1.5 px-0">
+              <DropdownMenuCheckboxItem>
+                Edit
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem @click="logOut()"
+                variant="destructive">
+                Log out
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
         </div>
       </div>
     </div>
 
+    <Dialog :open="isSearchOpen">
+      <DialogContent class="dialog max-w-[633px] p-8 flex flex-col items-center gap-0 shadow-md">
+        <DialogHeader class="gap-0">
+          <DialogTitle class="text-text text-2xl -tracking-[0.18px] font-medium text-center">
+            Search products
+          </DialogTitle>
+          <DialogDescription class="mt-2 text-primary/[70%] text-sm text-center max-w-[370px]">
+            Upload a photo of the product you are looking for. AI Assistant will find you that product or its
+            alternatives in the stores closest to you
+          </DialogDescription>
+        </DialogHeader>
+        <div class="mt-[64px] w-full">
+          <DropZone class="drop-area w-full w-full rounded-xl border border-dashed border-primary/[0.16]"
+            @file-dropped="addFiles">
+            <label class="py-[55px] px-6"
+              for="file-input">
+              <div class="flex flex-col items-center">
+                <div class="flex items-center justify-center w-6 h-6">
+                  <svg width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12.5 12.5858L16.7426 16.8284L15.3284 18.2426L13.5 16.415V22H11.5V16.413L9.67157 18.2426L8.25736 16.8284L12.5 12.5858ZM12.5 2C16.0934 2 19.0544 4.70761 19.4541 8.19395C21.7858 8.83154 23.5 10.9656 23.5 13.5C23.5 16.3688 21.3036 18.7246 18.5006 18.9776L18.5009 16.9644C20.1966 16.7214 21.5 15.2629 21.5 13.5C21.5 11.567 19.933 10 18 10C17.7912 10 17.5867 10.0183 17.3887 10.054C17.4616 9.7142 17.5 9.36158 17.5 9C17.5 6.23858 15.2614 4 12.5 4C9.73858 4 7.5 6.23858 7.5 9C7.5 9.36158 7.53838 9.7142 7.61205 10.0533C7.41331 10.0183 7.20879 10 7 10C5.067 10 3.5 11.567 3.5 13.5C3.5 15.2003 4.71241 16.6174 6.31986 16.934L6.50005 16.9646L6.50039 18.9776C3.69696 18.7252 1.5 16.3692 1.5 13.5C1.5 10.9656 3.21424 8.83154 5.54648 8.19411C5.94561 4.70761 8.90661 2 12.5 2Z"
+                      fill="#0A0A0A"
+                      fill-opacity="0.45" />
+                  </svg>
+                </div>
+                <h3 class="text-sm text-center text-primary select-none mt-4">
+                  Drop your files here, or
+                  <span class="block font-semibold text-brand">
+                    click to browse
+                  </span>
+                </h3>
+              </div>
+              <input multiple
+                type="file"
+                accept=".svg, .png, .jpg, .jpeg, .gif .webp"
+                id="file-input"
+                @change="onInputChange" />
+            </label>
+          </DropZone>
+          <div class="flex justify-between mt-3 text-xs text-primary/[0.45]">
+            <h3>Up to 10 files</h3>
+            <h3>50MB total limit</h3>
+          </div>
+          <div v-if="files.length"
+            class="branch-images mt-3 w-full grid grid-cols-3 max-h-[194px] gap-2 overflow-x-auto scrollbarY pr-0.5">
+            <div v-for="file in files"
+              :key="file.id"
+              class="w-full min-w-[170px] h-[194px] rounded-lg overflow-hidden relative">
+              <img class="w-full h-full object-cover"
+                :src="file.url"
+                :alt="file.file.name"
+                :title="file.file.name" />
+              <button @click="removeFile(file)"
+                type="button"
+                class="bg-primary/[0.45] flex items-center justify-center rounded-full absolute top-2 right-2 w-5 h-5">
+                <svg width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M8.00045 7.05767L11.3003 3.75781L12.2431 4.70062L8.94325 8.00047L12.2431 11.3003L11.3003 12.2431L8.00045 8.94327L4.70063 12.2431L3.75781 11.3003L7.05765 8.00047L3.75781 4.70062L4.70063 3.75781L8.00045 7.05767Z"
+                    fill="white" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <DialogClose as-child
+          class="absolute dialog-close top-8 right-8 hover:border-[1px]">
+          <Button @click="isSearchOpen = !isSearchOpen"
+            class="w-8 h-8 p-0"
+            type="button"
+            variant="outline">
+            <svg width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M7.93942 9.00009L2.09473 3.15538L3.15538 2.09473L9.00007 7.93936L14.8447 2.09473L15.9054 3.15538L10.0607 9.00009L15.9054 14.8447L14.8447 15.9054L9.00007 10.0607L3.15538 15.9054L2.09473 14.8447L7.93942 9.00009Z"
+                fill="#0A0A0A"
+                fill-opacity="0.45" />
+            </svg>
+          </Button>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+
   </header>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss"
+  scoped>
+  .drop-area {
+    transition: 0.2s ease;
+
+    &[data-active="true"] {
+      background: rgba(127, 86, 217, 0.1);
+    }
+  }
+
+  label {
+    cursor: pointer;
+    display: block;
+    position: relative;
+
+    input[type="file"] {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      top: 0;
+      left: 0;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+
+  }
+</style>

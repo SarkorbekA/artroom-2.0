@@ -203,7 +203,7 @@ onMounted(() => {
             class="product-inner z-10 absolute w-full opacity-0 duration-300 invisible h-full justify-end p-4 flex flex-col items-end top-0 left-0">
             <div class="flex flex-col gap-1 w-full justify-start relative product-box">
               <h3 class="text-background font-medium -tracking-[0.18px] text-md">{{ capitalize(item.name) }}</h3>
-              <button @click="router.push(`inspirations/${item}`)"
+              <button @click="router.push(`inspirations/${item.id}`)"
                 class="cursor-pointer text-background/[0.7] w-fit font-medium text-xs">Click to see
                 details</button>
             </div>
@@ -229,32 +229,5 @@ onMounted(() => {
 
 <style lang="scss"
   scoped>
-  .product {
-    &-box {
-      &::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 0px;
-        z-index: -1;
-        box-shadow: 0 0 50px 30px rgba(0, 0, 0, 0.5);
-      }
-    }
 
-    &:hover {
-      .product {
-        &-inner {
-          opacity: 1;
-          visibility: visible;
-        }
-
-        &-btn {
-          opacity: 1;
-          visibility: visible;
-        }
-      }
-    }
-  }
 </style>

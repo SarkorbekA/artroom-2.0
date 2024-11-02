@@ -3,8 +3,8 @@ import "v3-infinite-loading/lib/style.css";
 
 import './assets/main.css'
 
+import i18n from './i18n'
 import { createYmaps } from "vue-yandex-maps";
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
@@ -20,7 +20,7 @@ const app = createApp(App)
 app.component("infinite-loading", InfiniteLoading);
 app.use(createPinia())
 app.use(router)
-
+app.use(i18n);
 
 app.use(ymaps);
 app.mount('#app')
