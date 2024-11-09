@@ -1,11 +1,15 @@
 <script setup>
 import { useAPI } from "../../axios.js";
+const { post, get, remove, put } = useAPI();
+import { useCounterStore } from '@/stores/counter'
 
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 
-const { post, get, remove, put } = useAPI();
+
 const baseUrl = import.meta.env.VITE_APP_FILE_BASE_URL
+
+const { updateCount } = useCounterStore()
 
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
@@ -61,6 +65,27 @@ const getIdeas = async (pages, style) => {
     pages >= pageCount.value ? isLoading.value = false : ""
   }
 };
+
+const toggleLike = async (id) => {
+  try {
+    const response = await post('/design-idea/toggle', {
+      "image_idea_id": id
+    })
+
+    updateCount()
+
+    let el = ideas.value.find(el => el.id === id);
+
+    if (response.data?.liked == true) {
+      el.userLiked = true;
+    } else if (response.data?.liked == false) {
+      el.userLiked = false;
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 const getStyles = async () => {
   try {
@@ -186,17 +211,27 @@ onMounted(() => {
             class="w-full h-full object-cover"
             :src="baseUrl + item.image"
             alt="product">
-          <Button class="product-btn z-50 absolute top-4 right-4 opacity-0 duration-300 invisible"
+          <Button :class="{
+              'active': item.userLiked,
+            }"
+            @click="toggleLike(item.id)"
+            class="product-btn z-50 absolute top-4 right-4 opacity-0 duration-300 pt-0.5 invisible"
             variant="translucent"
             size="iconB">
-            <svg width="18"
-              height="18"
-              viewBox="0 0 18 18"
+            <svg :class="{
+              'active': item.userLiked,
+            }"
+              class="like"
+              width="16"
+              height="16"
+              viewBox="0 0 23 22"
               fill="none"
               xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12.375 2.25C14.6532 2.25 16.5 4.125 16.5 6.75C16.5 12 10.875 15 9 16.125C7.125 15 1.5 12 1.5 6.75C1.5 4.125 3.375 2.25 5.625 2.25C7.01998 2.25 8.25 3 9 3.75C9.75 3 10.98 2.25 12.375 2.25ZM9.70043 13.9529C10.3616 13.5364 10.9575 13.1216 11.5162 12.6772C13.7503 10.8998 15 8.95762 15 6.75C15 4.98057 13.8472 3.75 12.375 3.75C11.5681 3.75 10.6945 4.17683 10.0606 4.81066L9 5.87132L7.93935 4.81066C7.30551 4.17683 6.43192 3.75 5.625 3.75C4.1693 3.75 3 4.99238 3 6.75C3 8.95762 4.2497 10.8998 6.48385 12.6772C7.0425 13.1216 7.63838 13.5364 8.29957 13.9529C8.52345 14.0939 8.74582 14.2297 9 14.3814C9.25418 14.2297 9.47655 14.0939 9.70043 13.9529Z"
-                fill="white" />
+              <path stroke="white"
+                fill="currentColor"
+                d="M6.64623 1C3.17925 1 1 4.07081 1 6.54724C1 11.9954 7.14151 17.0473 11.5 20.2171C15.8585 17.0473 22 11.9954 22 6.54724C22 4.07081 19.8208 1 16.3538 1C14.3726 1 12.6887 2.58495 11.5 4.07081C10.2123 2.58495 8.62736 1 6.64623 1Z"
+                stroke-width="1.5"
+                stroke-miterlimit="10"></path>
             </svg>
           </Button>
           <div
@@ -228,6 +263,4 @@ onMounted(() => {
 </style>
 
 <style lang="scss"
-  scoped>
-
-</style>
+  scoped></style>

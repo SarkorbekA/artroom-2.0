@@ -10,6 +10,18 @@ import { Button } from '@/components/ui/button'
 
 
 <style lang="scss">
+.like {
+  path {
+    color: transparent;
+  }
+
+  &.active {
+    path {
+      color: white;
+    }
+  }
+}
+
 .dialog {
   &>button:not(.dialog-close) {
     display: none;
@@ -41,6 +53,13 @@ import { Button } from '@/components/ui/button'
         opacity: 1;
         visibility: visible;
       }
+    }
+  }
+
+  &-btn {
+    &.active {
+      opacity: 1;
+      visibility: visible;
     }
   }
 }

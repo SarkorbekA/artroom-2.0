@@ -1,6 +1,11 @@
 <script setup>
+import { useAPI } from "../../axios.js";
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
+const { post, get } = useAPI();
+
+const baseUrl = import.meta.env.VITE_APP_FILE_BASE_URL
+
 import { onMounted, ref, onBeforeUnmount, shallowRef, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -81,9 +86,15 @@ const locations = ref([
   }
 ])
 
+const idea = ref(null)
 
 const setLocation = (id) => {
   activeLocation.value = id
+}
+
+const capitalize = (str) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 const map = shallowRef(null);
@@ -102,7 +113,19 @@ const markers = [
 ];
 
 
+const getIdea = async () => {
+  try {
+    const response = await get(`/image-ideas/${route.params.id}`);
 
+    idea.value = response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+onMounted(() => {
+  getIdea()
+})
 </script>
 
 <template>
@@ -113,9 +136,10 @@ const markers = [
       <div class="grid gap-5 grid-cols-2">
         <div class="flex flex-col row-span-2 row-start-1 row-end-2 gap-6 mr-1 w-full">
           <div class="rounded-2xl w-full overflow-hidden relative">
-            <img loading="lazy"
+            <img v-if="idea?.image"
+              loading="lazy"
               class="w-full h-full aspect-square select-none"
-              src="@/assets/images/room.webp"
+              :src="baseUrl + idea?.image"
               alt="room">
             <div class="absolute w-full h-full top-0 left-0">
               <div class="top-[100px] left-[100px] absolute">
@@ -189,13 +213,13 @@ const markers = [
             </div>
           </div>
           <div>
-            <swiper :slidesPerView="5"
+            <!-- <swiper :slidesPerView="5"
               :space-between="16"
               :free-mode="true"
               :modules="[Keyboard]"
               :keyboard="{
-                      enabled: true,
-                    }"
+                enabled: true,
+              }"
               class="mySwiper">
               <swiper-slide class="w-full"
                 v-for="item in 6"
@@ -207,7 +231,7 @@ const markers = [
                     alt="room">
                 </div>
               </swiper-slide>
-            </swiper>
+            </swiper> -->
           </div>
         </div>
         <div class="pt-6 flex flex-col items-start w-full h-full">
@@ -272,12 +296,12 @@ const markers = [
             <Button class="!cursor-default text-primary/[0.7]"
               variant="base"
               size="base">
-              <h3>Montana</h3>
+              <h3>{{ capitalize(idea?.name) }}</h3>
             </Button>
           </div>
           <div class="mt-4 w-full">
-            <h3 class="w-full text-text text-2xl leading-[30px] font-medium truncate ...">Montana - Aesthetic room
-              decoration</h3>
+            <h3 class="w-full text-text text-2xl leading-[30px] font-medium truncate ...">{{ capitalize(idea?.name) }}
+            </h3>
           </div>
           <div class="bg-light rounded-xl w-full min-h-[652px] h-[652px] p-3 pb-0 flex flex-col gap-4 mt-5">
             <div class="flex justify-between items-center">
@@ -446,8 +470,8 @@ const markers = [
                             <li v-for="(item, index) in locations"
                               :key="index"
                               :class="{
-                      'bg-light border-dark !shadow-extra': activeLocation == index
-                    }"
+              'bg-light border-dark !shadow-extra': activeLocation == index
+            }"
                               class="flex flex-col gap-2 shadow-xs border-border border-[1px] relative p-4 rounded-lg">
                               <div @click="setLocation(index)"
                                 class="absolute top-0 left-0 w-full h-full z-20 cursor-pointer"></div>
@@ -489,11 +513,11 @@ const markers = [
                             <yandex-map ref="map"
                               class="h-full w-full"
                               :settings="{
-                      location: {
-                        center: [69.279737, 41.311158],
-                        zoom: 9,
-                      },
-                    }"
+              location: {
+                center: [69.279737, 41.311158],
+                zoom: 9,
+              },
+            }"
                               height="100%"
                               width="100%">
                               <yandex-map-default-features-layer />

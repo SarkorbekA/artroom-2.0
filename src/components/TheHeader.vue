@@ -25,8 +25,9 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ref, reactive, onMounted, computed } from 'vue'
-
+import { useCounterStore } from '@/stores/counter'
+import { ref, reactive, onMounted, watch, computed } from 'vue'
+const counterStore = useCounterStore()
 const { post, get, remove, put } = useAPI();
 const { files, removeFile, addFiles } = useFileList();
 
@@ -38,6 +39,7 @@ const form = reactive({
 const isLoginOpen = ref(false);
 const isGenerateOpen = ref(false);
 const isSearchOpen = ref(false);
+
 
 const onInputChange = (e) => {
   addFiles(e.target.files);
@@ -121,6 +123,7 @@ const openSearch = () => {
 
 onMounted(async () => {
   auth()
+  await counterStore.updateCount()
 })
 
 
@@ -389,7 +392,9 @@ onMounted(async () => {
                 fill-opacity="0.45" />
             </svg>
             <h3 class="px-1">Favourities</h3>
-            <span class="px-1 py-[1px] mr-1 rounded bg-primary/[0.07] text-xs leading-[18px]">16</span>
+            <span class="px-1 py-[1px] mr-1 rounded bg-primary/[0.07] text-xs leading-[18px]">
+              {{ counterStore.count }}
+            </span>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger as-child>

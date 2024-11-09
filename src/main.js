@@ -12,7 +12,7 @@ import App from './App.vue'
 import router from './router'
 
 const ymaps = createYmaps({
-  apikey: "9fa90fbc-ce5f-4dc9-ae6d-433e0ec7338b",
+  apikey: "1f3a9bac-e955-4f43-9255-a4fb0ffbffc8",
 });
 
 const app = createApp(App)
